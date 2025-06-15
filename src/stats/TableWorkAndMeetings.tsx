@@ -1,7 +1,7 @@
 import { Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import type { BaseStats } from "./types";
-import { getKeyByLabel } from "./utils";
+import { getKeyByLabel, getWorkLabel } from "./utils";
 import { useEffect, useState } from "react";
 import type { ProjectKey } from "./statsHelpers";
 
@@ -33,15 +33,15 @@ export const TableWorkAndMeetings = <T extends BaseStats>({
   // Columns for main table
   const columns: ColumnsType<T> = [
     {
-      title: "Semana",
-      dataIndex: "weekStartDate",
-      key: "weekStartDate",
+      title: label,
+      dataIndex: getKeyByLabel[label],
+      key: getKeyByLabel[label],
     },
     {
-      title: "Días laborados",
+      title: getWorkLabel[label],
       dataIndex: "numberOfWorkDays",
       key: "numberOfWorkDays",
-      render: (v: unknown) => "Días laborados: " + v,
+      render: (v: unknown) => `${getWorkLabel[label]}: ${v ?? data.length}`,
     },
     {
       title: "Total trabajo",
@@ -114,14 +114,16 @@ export const TableWorkAndMeetings = <T extends BaseStats>({
   };
 
   return (
-    <Table
-      columns={columns}
-      dataSource={data.map((item) => ({
-        ...item,
-        key: getKeyByLabel[label],
-      }))}
-      expandable={{ expandedRowRender, defaultExpandAllRows: true }}
-      pagination={false}
-    />
+    <div style={{ maxWidth: "100vw", overflow: "auto" }}>
+      <Table
+        columns={columns}
+        dataSource={data.map((item) => ({
+          ...item,
+          key: getKeyByLabel[label],
+        }))}
+        expandable={{ expandedRowRender, defaultExpandAllRows: true }}
+        pagination={false}
+      />
+    </div>
   );
 };

@@ -250,6 +250,13 @@ const DayForm = () => {
     return ` - ${time}`;
   };
 
+  const clearLocalStorage = () => {
+    const projectNames = localStorage.getItem("projectNames");
+    localStorage.clear();
+    if (projectNames) localStorage.setItem("projectNames", projectNames);
+    message.success("Datos eliminados exitosamente");
+  };
+
   if (!selectedDate) {
     return (
       <div>
@@ -540,6 +547,28 @@ const DayForm = () => {
           }}
         >
           Generar Total Semana
+        </Button>
+      </div>
+
+      <div
+        style={{
+          marginTop: 24,
+          display: "flex",
+          justifyContent: "center",
+          width: "100%",
+        }}
+      >
+        <Button
+          style={{ padding: 6 }}
+          onClick={() =>
+            modal.confirm({
+              title: "¿Eliminar datos del local storage?",
+              onOk: clearLocalStorage,
+              maskClosable: true,
+            })
+          }
+        >
+          Eliminar datos del local storage
         </Button>
       </div>
 

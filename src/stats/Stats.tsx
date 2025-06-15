@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Input, Button, Tabs, Typography } from "antd";
+import { useEffect, useState } from "react";
+import { Input, Button, Tabs, Typography, Modal } from "antd";
 import {
   generateMonthlyStats,
   generateQuarterlyStats,
@@ -29,17 +29,17 @@ const StatsTabs = <T extends BaseStats>({
   label: string;
 }) => {
   return (
-    <Tabs defaultActiveKey="1">
-      <TabPane tab="Horas Trabajadas" key="2">
+    <Tabs defaultActiveKey="1" centered>
+      <TabPane tab="Trabajo" key="1">
         <TableWorkAndMeetings data={data} label={label} />
       </TabPane>
-      <TabPane tab="Equilibrio en mis horas" key="1">
+      <TabPane tab="Rutina" key="2">
         <TableSchedule data={data} label={label} />
       </TabPane>
-      <TabPane tab="Fases y Ejercicio" key="4">
+      <TabPane tab="Fases" key="3">
         <TablePhasesAndExercise data={data} label={label} />
       </TabPane>
-      <TabPane tab="Actividades adicionales" key="3">
+      <TabPane tab="Actividades" key="4">
         <TablePersonal data={data} label={label} />
       </TabPane>
     </Tabs>
@@ -56,6 +56,7 @@ type Stats = {
 export default function Stats() {
   const [rawJson, setRawJson] = useState("");
   const [stats, setStats] = useState<Stats>();
+  const [modalOpen, setModalOpen] = useState(false);
 
   const processData = () => {
     const data = JSON.parse(rawJson);
@@ -65,46 +66,74 @@ export default function Stats() {
     const quartersStats = generateQuarterlyStats(monthsStats);
     const yearsStats = generateYearStats(quartersStats);
 
-    setStats({
+    const stats = {
       weekly: weeksStats,
       monthly: monthsStats,
       quarterly: quartersStats,
       year: yearsStats,
-    });
+    };
+
+    setStats(stats);
+    localStorage.setItem("stats", JSON.stringify(stats));
+    setModalOpen(false);
   };
 
-  if (!stats)
-    return (
-      <div style={{ padding: "1rem" }}>
-        <Title level={2}>📊 Estadísticas</Title>
+  useEffect(() => {
+    const stats = localStorage.getItem("stats");
+    if (stats) {
+      setStats(JSON.parse(stats));
+    }
+  }, []);
 
+  // if (!stats)
+  //   return (
+  //     <div style={{ padding: "1rem" }}>
+  //
+  //     </div>
+  //   );
+
+  return (
+    <>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <Title level={4}>📊 Estadísticas</Title>
+        <Button onClick={() => setModalOpen(true)}>Actualizar datos</Button>
+      </div>
+
+      {stats && (
+        <Tabs defaultActiveKey="1" centered>
+          <TabPane tab="Semanales" key="1">
+            <StatsTabs data={stats.weekly} label="Semana" />
+          </TabPane>
+          <TabPane tab="Mensuales" key="2">
+            <StatsTabs data={stats.monthly} label="Mes" />
+          </TabPane>
+          <TabPane tab="Trimestrales" key="3">
+            <StatsTabs data={stats.quarterly} label="Trimestre" />
+          </TabPane>
+        </Tabs>
+      )}
+
+      <Modal
+        title="Pega aquí tu JSON..."
+        open={modalOpen}
+        onCancel={() => setModalOpen(false)}
+        footer={[
+          <Button key="cancel" onClick={() => setModalOpen(false)}>
+            Cancelar
+          </Button>,
+          <Button type="primary" onClick={processData}>
+            Procesar datos
+          </Button>,
+        ]}
+      >
         <TextArea
           rows={8}
           value={rawJson}
           onChange={(e) => setRawJson(e.target.value)}
-          placeholder="Pega aquí tu JSON..."
+          placeholder=""
           style={{ marginBottom: "1rem" }}
         />
-
-        <Button type="primary" onClick={processData}>
-          Procesar datos
-        </Button>
-      </div>
-    );
-
-  return (
-    <div style={{ padding: "1rem" }}>
-      <Tabs defaultActiveKey="1">
-        <TabPane tab="Semanales" key="1">
-          <StatsTabs data={stats.weekly} label="Semana" />
-        </TabPane>
-        <TabPane tab="Mensuales" key="2">
-          <StatsTabs data={stats.monthly} label="Mes" />
-        </TabPane>
-        <TabPane tab="Trimestrales" key="3">
-          <StatsTabs data={stats.quarterly} label="Trimestre" />
-        </TabPane>
-      </Tabs>
-    </div>
+      </Modal>
+    </>
   );
 }

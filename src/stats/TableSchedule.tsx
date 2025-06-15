@@ -60,11 +60,13 @@ export const TableSchedule = <T extends BaseStats>({
   ];
 
   return (
-    <Table
-      rowKey="weekStartDate"
-      dataSource={data}
-      columns={columns}
-      pagination={false}
-    />
+    <div style={{ maxWidth: "100vw", overflow: "auto" }}>
+      <Table
+        rowKey="weekStartDate"
+        dataSource={data}
+        columns={columns}
+        pagination={false}
+      />
+    </div>
   );
 };

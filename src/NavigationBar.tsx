@@ -32,15 +32,15 @@ const NavigationBar = ({ children, setCurrentPage }: AppLayoutProps) => {
         style={{
           display: "flex",
           alignItems: "center",
-          justifyContent: "space-between",
+          gap: 16,
           backgroundColor: "white",
           paddingInline: 16,
         }}
       >
+        <Button type="text" icon={<MenuOutlined />} onClick={toggleDrawer} />
         <Title level={4} style={{ margin: 0 }}>
           Time tracker
         </Title>
-        <Button type="text" icon={<MenuOutlined />} onClick={toggleDrawer} />
       </Header>
 
       <Drawer title="Menú" placement="left" onClose={toggleDrawer} open={open}>

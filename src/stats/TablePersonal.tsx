@@ -64,12 +64,14 @@ export const TablePersonal = <T extends BaseStats>({
   ];
 
   return (
-    <Table
-      rowKey="weekStartDate"
-      dataSource={data}
-      columns={columns}
-      scroll={{ x: 1500 }}
-      pagination={false}
-    />
+    <div style={{ maxWidth: "100vw", overflow: "auto" }}>
+      <Table
+        rowKey="weekStartDate"
+        dataSource={data}
+        columns={columns}
+        scroll={{ x: 1500 }}
+        pagination={false}
+      />
+    </div>
   );
 };

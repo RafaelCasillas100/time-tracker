@@ -1,5 +1,4 @@
 import { useState } from "react";
-import "./App.css";
 import Day from "./Day";
 import ProjectNames from "./ProjectNames";
 import NavigationBar, { pages } from "./NavigationBar";
