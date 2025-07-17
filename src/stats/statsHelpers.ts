@@ -111,7 +111,7 @@ export function generateWeeklyStats(rawData: RawData): WeeklyStats[] {
 
       days.forEach((day) =>
         day.phases.forEach((phase) =>
-          phase.additionalActivities.forEach((a) => {
+          phase?.additionalActivities?.forEach((a) => {
             if (a.activityType === activity) {
               const time = parseTimeToMinutes(a.time);
               (a.usedTechDevice ? withDevice : withoutDevice).push(time);
@@ -140,7 +140,7 @@ export function generateWeeklyStats(rawData: RawData): WeeklyStats[] {
       const times: number[] = [];
       days.forEach((day) =>
         day.phases.forEach((phase) =>
-          phase.additionalActivities.forEach((a) => {
+          phase?.additionalActivities?.forEach((a) => {
             if (a.activityType === activity)
               times.push(parseTimeToMinutes(a.time));
           })
@@ -156,7 +156,7 @@ export function generateWeeklyStats(rawData: RawData): WeeklyStats[] {
 
     const workByPhase = [0, 1, 2, 3].map((i) => {
       const totalMins = days.reduce(
-        (sum, d) => sum + parseTimeToMinutes(d.phases[i].total),
+        (sum, d) => sum + parseTimeToMinutes(d.phases?.[i]?.total || "0"),
         0
       );
       return {

@@ -61,6 +61,10 @@ export default function Stats() {
   const processData = () => {
     const data = JSON.parse(rawJson);
 
+    data.weeks = data.weeks?.filter(
+      (val: { weekStartDate: string }) => !!val.weekStartDate
+    );
+
     const weeksStats = generateWeeklyStats(data);
     const monthsStats = generateMonthlyStats(weeksStats);
     const quartersStats = generateQuarterlyStats(monthsStats);
