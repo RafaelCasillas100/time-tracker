@@ -6,6 +6,7 @@ import {
   getMonday,
   parseTimeToMinutes,
 } from "./utils";
+import type { Day } from "./types";
 
 const daysOfWeek = ["Mon", "Tue", "Wed", "Thu", "Fri"];
 const projectKeys = ["project1", "project2", "project3"];
@@ -29,8 +30,8 @@ function getDateForWeekday(weekdayIndex: number): string {
   return formatDate(date);
 }
 
-function getWeekDayData(): Record<string, unknown> {
-  const result: Record<string, unknown> = {};
+function getWeekDayData(): Record<string, Day["dayTotals"]> {
+  const result: Record<string, Day["dayTotals"]> = {};
 
   for (let i = 0; i < 5; i++) {
     const dateStr = getDateForWeekday(i);
@@ -38,7 +39,7 @@ function getWeekDayData(): Record<string, unknown> {
     if (raw) {
       try {
         result[daysOfWeek[i]] = JSON.parse(raw)?.dayTotals || {};
-      } catch (e) {
+      } catch {
         console.warn("Invalid JSON for date", dateStr);
       }
     }
@@ -66,13 +67,13 @@ export const WeekTotalsTable = ({
     };
 
     for (const day of daysOfWeek) {
-      const time = dayData?.[day]?.[projectKey];
+      const time = (dayData?.[day] as Record<string, string>)?.[projectKey];
       if (time) {
-        row[day] = time;
+        row[day as keyof ProjectRow] = time;
         total += parseTimeToMinutes(time);
         count++;
       } else {
-        row[day] = "-";
+        row[day as keyof ProjectRow] = "-";
       }
     }
 
