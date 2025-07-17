@@ -1,0 +1,106 @@
+import { Table } from "antd";
+import { useMemo } from "react";
+import {
+  formatDate,
+  formatMinutesToTime,
+  getMonday,
+  parseTimeToMinutes,
+} from "./utils";
+
+const daysOfWeek = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+const projectKeys = ["project1", "project2", "project3"];
+
+type ProjectRow = {
+  key: string;
+  project: string;
+  Mon?: string;
+  Tue?: string;
+  Wed?: string;
+  Thu?: string;
+  Fri?: string;
+  total: string;
+  average: string;
+};
+
+function getDateForWeekday(weekdayIndex: number): string {
+  const monday = getMonday(); // returns Date object for Monday of current week
+  const date = new Date(monday);
+  date.setDate(monday.getDate() + weekdayIndex); // 0 = Mon, 4 = Fri
+  return formatDate(date);
+}
+
+function getWeekDayData(): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
+
+  for (let i = 0; i < 5; i++) {
+    const dateStr = getDateForWeekday(i);
+    const raw = localStorage.getItem(dateStr);
+    if (raw) {
+      try {
+        result[daysOfWeek[i]] = JSON.parse(raw)?.dayTotals || {};
+      } catch (e) {
+        console.warn("Invalid JSON for date", dateStr);
+      }
+    }
+  }
+
+  return result;
+}
+
+export const WeekTotalsTable = ({
+  projectNames,
+}: {
+  projectNames: string[];
+}) => {
+  const dayData = useMemo(() => getWeekDayData(), []);
+
+  const dataSource: ProjectRow[] = projectKeys.map((projectKey, idx) => {
+    let total = 0;
+    let count = 0;
+
+    const row: ProjectRow = {
+      key: projectKey,
+      project: projectNames[idx],
+      total: "",
+      average: "",
+    };
+
+    for (const day of daysOfWeek) {
+      const time = dayData?.[day]?.[projectKey];
+      if (time) {
+        row[day] = time;
+        total += parseTimeToMinutes(time);
+        count++;
+      } else {
+        row[day] = "-";
+      }
+    }
+
+    row.total = formatMinutesToTime(total);
+    row.average = count ? formatMinutesToTime(Math.round(total / count)) : "-";
+
+    return row;
+  });
+
+  const columns = [
+    { title: "Proyecto", dataIndex: "project", key: "project" },
+    ...daysOfWeek.map((day) => ({
+      title: day,
+      dataIndex: day,
+      key: day,
+      align: "center" as const,
+    })),
+    { title: "Total semana", dataIndex: "total", key: "total" },
+    { title: "Prom. por día", dataIndex: "average", key: "average" },
+  ];
+
+  return (
+    <Table
+      dataSource={dataSource}
+      columns={columns}
+      pagination={false}
+      size="small"
+      bordered
+    />
+  );
+};

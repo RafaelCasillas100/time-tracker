@@ -43,6 +43,7 @@ import {
   PhoneOutlined,
 } from "@ant-design/icons";
 import ManualModal from "./ManualModal";
+import { WeekTotalsTable } from "./WeekTotals";
 
 dayjs.locale("es");
 
@@ -485,17 +486,9 @@ const DayForm = () => {
           }
           key={0}
         >
-          <Descriptions column={1} bordered size="small">
-            <Descriptions.Item label={projectNames[0]}>
-              {weekTotals.project1}
-            </Descriptions.Item>
-            <Descriptions.Item label={projectNames[1]}>
-              {weekTotals.project2}
-            </Descriptions.Item>
-            <Descriptions.Item label={projectNames[2]}>
-              {weekTotals.project3}
-            </Descriptions.Item>
-          </Descriptions>
+          <div style={{ maxWidth: "100%", overflowX: "scroll" }}>
+            <WeekTotalsTable projectNames={projectNames} />
+          </div>
         </Panel>
       </Collapse>
 
@@ -559,7 +552,6 @@ const DayForm = () => {
         }}
       >
         <Button
-          style={{ padding: 6 }}
           onClick={() =>
             modal.confirm({
               title: "¿Eliminar datos del local storage?",

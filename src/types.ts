@@ -5,7 +5,7 @@ export type AdditionalActivity = {
 };
 
 export type Phase = {
-  phaseNumber: 1 | 2 | 3 | 4;
+  phaseNumber: 1 | 2 | 3 | 4 | 5;
   phaseName: string;
   project1: string;
   project2: string;
@@ -57,6 +57,7 @@ export const phaseNames = [
   "8am a 11am",
   "11am a 2pm",
   "2pm a 6pm",
+  "Después de las 6pm",
 ];
 
 export const defaultDay: Day = {
@@ -68,8 +69,8 @@ export const defaultDay: Day = {
   quitWorkTime: "",
   sleepTime: "",
   exerciseTime: "",
-  phases: [1, 2, 3, 4].map((n) => ({
-    phaseNumber: n as 1 | 2 | 3 | 4,
+  phases: [1, 2, 3, 4, 5].map((n) => ({
+    phaseNumber: n as 1 | 2 | 3 | 4 | 5,
     phaseName: phaseNames[n - 1],
     project1: "",
     project2: "",

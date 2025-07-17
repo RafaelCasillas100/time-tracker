@@ -144,10 +144,12 @@ export const calcularPorcentaje = (
 };
 
 export function getMonday(): Date {
-  const date = new Date();
+  const now = new Date();
+  const date = new Date(now.getFullYear(), now.getMonth(), now.getDate()); // clone to avoid mutating
   const day = date.getDay(); // 0 (Sun) to 6 (Sat)
-  const diff = date.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is Sunday
-  return new Date(date.setDate(diff));
+  const diff = date.getDate() - day + (day === 0 ? -6 : 1);
+  date.setDate(diff);
+  return date;
 }
 
 export function formatDate(date: Date): string {
