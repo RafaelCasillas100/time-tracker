@@ -53,6 +53,14 @@ export const TablePhasesAndExercise = <T extends BaseStats>({
         return p?.avgTime || "-";
       },
     },
+    {
+      title: "Promedio después 6pm",
+      dataIndex: "workByPhase",
+      render: (phases: WorkByPhase) => {
+        const p = phases?.find((f) => f.phaseIndex === 4);
+        return p?.avgTime || "-";
+      },
+    },
   ];
 
   return (

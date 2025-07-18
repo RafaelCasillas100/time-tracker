@@ -39,6 +39,7 @@ export type BaseStats = {
   avgQuitWorkTime?: string; // "18:43"
   avgSleepTime?: string; // "21:48"
   avgSleepingTime?: string;
+  numberOfWorkDays?: number;
 
   // Ejercicio
   totalExerciseTime?: string; // "3:45"

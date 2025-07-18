@@ -76,6 +76,16 @@ export function generateWeeklyStats(rawData: RawData): WeeklyStats[] {
       totalWorkTimeMinutes / numberOfWorkDays
     );
 
+    const dailyProjectTotals = days.slice(0, 5).map((day, index) => {
+      const dayName = ["Lun", "Mar", "Mié", "Jue", "Vie"][index];
+      return {
+        day: dayName,
+        project1: day.dayTotals.project1 || "0:00",
+        project2: day.dayTotals.project2 || "0:00",
+        project3: day.dayTotals.project3 || "0:00",
+      };
+    });
+
     // If the phases doesn't exist, only return the projectTotals
     if (days.every((d) => !d.phases))
       return {
@@ -84,6 +94,7 @@ export function generateWeeklyStats(rawData: RawData): WeeklyStats[] {
         totalWorkTime,
         numberOfWorkDays,
         avgWorkTimePerDay,
+        dailyProjectTotals,
       };
 
     const timeField = (key: keyof Day) => weekdays.map((d) => d[key] as string);
@@ -188,6 +199,7 @@ export function generateWeeklyStats(rawData: RawData): WeeklyStats[] {
 
     return {
       weekStartDate: week.weekStartDate,
+      dailyProjectTotals,
       avgWakeUpTime: avg("wakeUpTime"),
       avgGoToBedAgainPercentage: +avgGoToBedAgainPercentage.toFixed(2),
       avgTimeFromWakeUpToWork: avg("timeFromWakeUpToWork"),
@@ -244,6 +256,11 @@ function addDurations(durations: string[]): number {
 export function mergeStats<T extends BaseStats>(statsArray: T[]): BaseStats {
   const total = statsArray.length;
 
+  const totalWorkDays = statsArray.reduce(
+    (acc, s) => acc + (s.numberOfWorkDays || 0),
+    0
+  );
+
   // Función para obtener promedio de tiempos tipo "HH:MM"
   const avgTime = (key: keyof BaseStats) =>
     divideDuration(
@@ -255,20 +272,9 @@ export function mergeStats<T extends BaseStats>(statsArray: T[]): BaseStats {
     const totalMinutes = addDurations(
       statsArray.map((s) => s.projectTotals[project].total)
     );
-    // const avgMinutes = Math.round(
-    //   totalMinutes /
-    //     statsArray.reduce(
-    //       (acc, s) =>
-    //         acc +
-    //         (parseFloat(s.projectTotals[project].avgPerDay.split(":")[0]) > 0
-    //           ? 1
-    //           : 0),
-    //       0
-    //     )
-    // );
     return {
       total: formatMinutes(totalMinutes),
-      avgPerDay: divideDuration(formatMinutes(totalMinutes), 5),
+      avgPerDay: divideDuration(formatMinutes(totalMinutes), totalWorkDays),
     };
   };
 
@@ -276,7 +282,10 @@ export function mergeStats<T extends BaseStats>(statsArray: T[]): BaseStats {
     const totalMinutes = addDurations(
       statsArray.map((s) => s.meetings?.[project]?.total || "0:00")
     );
-    const avgPerDay = divideDuration(formatMinutes(totalMinutes), 5);
+    const avgPerDay = divideDuration(
+      formatMinutes(totalMinutes),
+      totalWorkDays
+    );
     const workMinutes = addDurations(
       statsArray.map((s) => s.projectTotals[project].total)
     );
@@ -364,6 +373,7 @@ export function mergeStats<T extends BaseStats>(statsArray: T[]): BaseStats {
       ),
       total
     ),
+    numberOfWorkDays: totalWorkDays,
   };
 }
 

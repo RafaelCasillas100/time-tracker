@@ -1,7 +1,7 @@
 import { Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import type { BaseStats } from "./types";
-import { getKeyByLabel, getWorkLabel } from "./utils";
+import { getKeyByLabel } from "./utils";
 import { useEffect, useState } from "react";
 import type { ProjectKey } from "./statsHelpers";
 
@@ -38,10 +38,10 @@ export const TableWorkAndMeetings = <T extends BaseStats>({
       key: getKeyByLabel[label],
     },
     {
-      title: getWorkLabel[label],
+      title: "Días laborados",
       dataIndex: "numberOfWorkDays",
       key: "numberOfWorkDays",
-      render: (v: unknown) => `${getWorkLabel[label]}: ${v ?? data.length}`,
+      render: (v: unknown) => `Días laborados: ${v ?? data.length}`,
     },
     {
       title: "Total trabajo",
@@ -58,7 +58,9 @@ export const TableWorkAndMeetings = <T extends BaseStats>({
   ];
 
   // Columns for subtable
-  const expandedRowRender = (record: T) => {
+  const expandedRowRender = (record: any) => {
+    const isWeeklyStats = !!record?.dailyProjectTotals;
+
     const data = ["project1", "project2", "project3", ""].map((project) => ({
       key: project,
       project,
@@ -70,6 +72,20 @@ export const TableWorkAndMeetings = <T extends BaseStats>({
         record.meetings?.[project as ProjectKey]?.avgPerDay ?? "-",
       percentage:
         record.meetings?.[project as ProjectKey]?.percentageOfWork ?? "-",
+      ...(isWeeklyStats
+        ? {
+            Mon:
+              record?.dailyProjectTotals?.[0]?.[project as ProjectKey] ?? "-",
+            Tue:
+              record?.dailyProjectTotals?.[1]?.[project as ProjectKey] ?? "-",
+            Wed:
+              record?.dailyProjectTotals?.[2]?.[project as ProjectKey] ?? "-",
+            Thu:
+              record?.dailyProjectTotals?.[3]?.[project as ProjectKey] ?? "-",
+            Fri:
+              record?.dailyProjectTotals?.[4]?.[project as ProjectKey] ?? "-",
+          }
+        : {}),
     }));
 
     const subColumns = [
@@ -79,6 +95,13 @@ export const TableWorkAndMeetings = <T extends BaseStats>({
         key: "project",
         render: (v: unknown) => projectNames[v as ProjectKey],
       },
+      ...(isWeeklyStats
+        ? ["Mon", "Tue", "Wed", "Thu", "Fri"].map((dayKey) => ({
+            title: dayKey,
+            dataIndex: dayKey,
+            key: dayKey,
+          }))
+        : []),
       {
         title: "Total",
         dataIndex: "total",

@@ -89,13 +89,6 @@ export default function Stats() {
     }
   }, []);
 
-  // if (!stats)
-  //   return (
-  //     <div style={{ padding: "1rem" }}>
-  //
-  //     </div>
-  //   );
-
   return (
     <>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
