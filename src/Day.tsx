@@ -148,12 +148,16 @@ const DayForm = () => {
       if (!updatedDay.phases?.[3] && savedDay.phases?.[3]) {
         updatedDay.phases[3] = savedDay.phases[3];
       }
+      if (!updatedDay.phases?.[4] && savedDay.phases?.[4]) {
+        updatedDay.phases[4] = savedDay.phases[4];
+      }
     }
 
     const phase1 = updatedDay.phases?.[0];
     const phase2 = updatedDay.phases?.[1];
     const phase3 = updatedDay.phases?.[2];
     const phase4 = updatedDay.phases?.[3];
+    const phase5 = updatedDay.phases?.[4];
     if (phase1) {
       updatedDay.phases[0].total = sumTimes(
         phase1.project1,
@@ -180,6 +184,13 @@ const DayForm = () => {
         phase4.project1,
         phase4.project2,
         phase4.project3
+      );
+    }
+    if (phase5) {
+      updatedDay.phases[4].total = sumTimes(
+        phase5.project1,
+        phase5.project2,
+        phase5.project3
       );
     }
 
