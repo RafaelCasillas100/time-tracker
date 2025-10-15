@@ -83,6 +83,39 @@ export const WeekTotalsTable = ({
     return row;
   });
 
+  let total = 0;
+  let count = 0;
+
+  const totals: ProjectRow = {
+    key: "totals",
+    project: "Total",
+    total: "",
+    average: "",
+  };
+
+  for (const day of daysOfWeek) {
+    const time = dataSource.reduce((prev, data) => {
+      const dayTotal = data[day];
+      if (!dayTotal || dayTotal === "-") return prev;
+      return prev + parseTimeToMinutes(dayTotal);
+    }, 0);
+
+    if (time) {
+      totals[day as keyof ProjectRow] = formatMinutesToTime(time);
+      total += time;
+      count++;
+    } else {
+      totals[day as keyof ProjectRow] = "-";
+    }
+  }
+
+  totals.total = formatMinutesToTime(total);
+
+  totals.average = count ? formatMinutesToTime(Math.round(total / count)) : "-";
+
+  dataSource.push({ key: "emptyRow" } as ProjectRow);
+  dataSource.push(totals);
+
   const columns = [
     { title: "Proyecto", dataIndex: "project", key: "project" },
     ...daysOfWeek.map((day) => ({
